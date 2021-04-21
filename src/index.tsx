@@ -1,5 +1,4 @@
 import React from 'react';
-import capitalize from 'lodash.capitalize';
 import {
   Flex,
   Heading,
@@ -10,6 +9,9 @@ import {
   Td,
   Th
 } from '@chakra-ui/react';
+
+const capitalize = (str: string) =>
+  str.slice(0, 1).toUpperCase() + str.slice(1).toLowerCase();
 
 export interface DataTableTypes<
   T extends ReadonlyArray<string>,
