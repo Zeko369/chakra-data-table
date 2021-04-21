@@ -8,7 +8,11 @@
   },
   "alias": {
     "react": "../node_modules/react",
-    "react-dom": "../node_modules/react-dom/profiling"
+    "react-dom": "../node_modules/react-dom/profiling",
+    "@chakra-ui/react": "../node_modules/@chakra-ui/react",
+    "@emotion/react": "../node_modules/@emotion/react",
+    "@emotion/styled": "../node_modules/@emotion/styled",
+    "framer-motion": "../node_modules/framer-motion"
   },
   "devDependencies": {
     "@types/react": "^16.9.11",
@@ -16,10 +20,7 @@
     "typescript": "^4.0.3"
   },
   "dependencies": {
-    "@chakra-ui/icons": "^1.0.1",
-    "@emotion/react": "^11.1.1",
-    "@emotion/styled": "^11.0.0",
-    "framer-motion": "^2.9.4",
+    "@chakra-ui/icons": "^1.0.11",
     "next": "^10.1.3"
   }
 }

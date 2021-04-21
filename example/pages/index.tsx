@@ -1,6 +1,17 @@
 import React from 'react';
 import { NextPage } from 'next';
-import { Text } from '@chakra-ui/react';
+import {
+  Text,
+  HStack,
+  Button,
+  Table,
+  Tbody,
+  Td,
+  Th,
+  Thead,
+  Tr,
+  VStack
+} from '@chakra-ui/react';
 import { DataTable } from '../../dist';
 
 const data = [
@@ -13,12 +24,20 @@ const data = [
 const Home: NextPage = () => {
   return (
     <DataTable
+      title="Some random data"
       data={data}
-      keys={['id', 'title', 'items'] as const}
+      keys={['id', 'title', 'items', 'buttons'] as const}
       mapper={{
         id: true,
-        title: (r) => <Text color="red">{r.title || 'Unknonw'}</Text>,
-        items: (r) => r.items.join(',')
+        title: (r) => <Text color="green">{r.title}</Text>,
+        items: (r) => r.items.join(', '),
+        buttons: () => (
+          <HStack>
+            <Button colorScheme="green" size="sm">
+              Click me
+            </Button>
+          </HStack>
+        )
       }}
     />
   );
