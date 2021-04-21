@@ -421,6 +421,16 @@ caniuse-lite@^1.0.30001173, caniuse-lite@^1.0.30001179:
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001208.tgz#a999014a35cebd4f98c405930a057a0d75352eb9"
   integrity sha512-OE5UE4+nBOro8Dyvv0lfx+SRtfVIOM9uhKqFmJeUbGriqhhStgp1A0OyBpgy3OUF8AhYCT+PVwPC1gMl2ZcQMA==
 
+chakra-confirm@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/chakra-confirm/-/chakra-confirm-1.0.0.tgz#ffa0c16bc435743b34addfa5eead4ca2d26d508e"
+  integrity sha512-yPEJssYykySR2i89N1RK2kEsDEIQ/FUHwkJMDaD4fRchVNXfYJrle2RuzXFa63v6uYHvt6PlB0q143CxhvQKkw==
+
+chakra-next-link@^1.0.8:
+  version "1.0.8"
+  resolved "https://registry.yarnpkg.com/chakra-next-link/-/chakra-next-link-1.0.8.tgz#73957039a68eaf085569510d2f5b4fcfc448d749"
+  integrity sha512-18O1tSKSIVJ3aZzK5p2m7Sm9+2zz95VJDEiJICjGCK8kEjW3+qeh3dPoWeBUH67A8Bven4ituQO5Z9MQ/t1R0A==
+
 chalk@2.4.2, chalk@^2.0.0, chalk@^2.4.2:
   version "2.4.2"
   resolved "https://registry.yarnpkg.com/chalk/-/chalk-2.4.2.tgz#cd42541677a54333cf541a49108c1432b44c9424"
