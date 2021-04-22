@@ -23,7 +23,7 @@ const capitalize = (str: string) => str.slice(0, 1).toUpperCase() + str.slice(1)
 
 type MapperFunc<K extends Record<string | number, unknown>[]> = (
   data: K[number],
-  index?: number
+  index: number
 ) => string | number | null | React.ReactElement;
 
 export interface DataTableTypes<
@@ -93,7 +93,7 @@ export function DataTable<
     emptyText
   } = props;
 
-  const getData = (row: Record<string | number, any>, key: T[number], index?: number) => {
+  const getData = (row: Record<string | number, any>, key: T[number], index: number) => {
     const map = mapper[key] as true | MapperFunc<Array<typeof row>>;
     if (map === true) {
       return row[key] || null;
