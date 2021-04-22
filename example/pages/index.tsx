@@ -29,7 +29,7 @@ const Home: NextPage = () => {
     <DataTable
       title="Some random data"
       data={data}
-      keys={['id', 'title', 'items', 'buttons'] as const}
+      keys={['id', 'index', 'title', 'items', 'buttons'] as const}
       keyFunc={'id'}
       tableProps={{
         td: {
@@ -42,6 +42,7 @@ const Home: NextPage = () => {
       showFooter
       mapper={{
         id: true,
+        index: (r, index) => <Text color="red.600">{index}</Text>,
         title: (r) => <Text color="green">{r.title}</Text>,
         items: (r) => r.items.join(', '),
         buttons: (r) => (

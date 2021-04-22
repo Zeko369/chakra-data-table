@@ -22,7 +22,8 @@ import {
 const capitalize = (str: string) => str.slice(0, 1).toUpperCase() + str.slice(1).toLowerCase();
 
 type MapperFunc<K extends Record<string | number, unknown>[]> = (
-  data: K[number]
+  data: K[number],
+  index?: number
 ) => string | number | null | React.ReactElement;
 
 export interface DataTableTypes<
@@ -92,7 +93,7 @@ export function DataTable<
     emptyText
   } = props;
 
-  const getData = (row: Record<string | number, any>, key: T[number]) => {
+  const getData = (row: Record<string | number, any>, key: T[number], index?: number) => {
     const map = mapper[key] as true | MapperFunc<Array<typeof row>>;
     if (map === true) {
       return row[key] || null;
@@ -103,7 +104,7 @@ export function DataTable<
       return null;
     }
 
-    return map(row) || null;
+    return map(row, index) || null;
   };
 
   return (
@@ -127,7 +128,7 @@ export function DataTable<
               let rowKey: string = index.toString();
               if (keyFunc) {
                 // @ts-ignore
-                rowKey = typeof keyFunc === 'string' ? row[keyFunc] : keyFunc(row);
+                rowKey = typeof keyFunc === 'string' ? row[keyFunc] : keyFunc(row, index);
               }
 
               return (
@@ -135,7 +136,7 @@ export function DataTable<
                   {keys.map((key) => (
                     <Td key={`${rowKey}-${key}`} {...tableProps?.td}>
                       {//@ts-ignore
-                      getData(row, key)}
+                      getData(row, key, index)}
                     </Td>
                   ))}
                 </Tr>

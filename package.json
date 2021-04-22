@@ -9,6 +9,7 @@
   "module": "dist/chakra-confirm.esm.js",
   "scripts": {
     "dev": "tsdx watch",
+    "dev:example": "concurrently \"yarn dev\" \"cd example && yarn dev -p 3001\"",
     "build": "tsdx build",
     "test": "tsdx test --passWithNoTests",
     "lint": "tsdx lint src test example/pages",
@@ -32,6 +33,7 @@
     "@types/react": "^16.9.49",
     "@types/react-dom": "^16.9.8",
     "babel-jest": "^26.3.0",
+    "concurrently": "^6.0.2",
     "framer-motion": "^4.1.6",
     "husky": "^4.3.0",
     "next": "^9.5.3",
