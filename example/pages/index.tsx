@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { NextPage } from 'next';
-import { Text, HStack, Button, VStack, Heading } from '@chakra-ui/react';
+import { Button, Heading, HStack, Text, VStack } from '@chakra-ui/react';
 import { useConfirmDelete } from 'chakra-confirm';
 import { LinkButton } from 'chakra-next-link';
 
@@ -41,15 +41,21 @@ const Home: NextPage = () => {
       }}
       showFooter
       mapper={{
-        id: true,
+        id: [true, 8],
         index: (r, index) => <Text color="red.600">{index}</Text>,
-        title: (r) => <Text color="green">{r.title}</Text>,
-        items: (r) => r.items.join(', '),
+        title: [(r) => <Text color="green">{r.title}</Text>, { bg: 'gray.100' }],
+        items: [
+          (r) => (r.items.length === 0 ? 'Error' : r.items.join(', ')),
+          (r) => ({
+            bg: r.items.length === 0 ? 'red.500' : undefined,
+            color: 'white'
+          })
+        ],
         buttons: (r) => (
           <HStack>
             <Button
               onClick={() => {
-                confirm().then(() => setData((d) => d.filter((i) => i.id !== r.id)));
+                confirm().then((ok) => ok && setData((d) => d.filter((i) => i.id !== r.id)));
               }}
               colorScheme="red"
               size="sm"

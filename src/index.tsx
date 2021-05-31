@@ -1,22 +1,22 @@
 import React from 'react';
 import {
   Flex,
+  FlexProps,
   Heading,
   Table,
-  Tbody,
-  Thead,
-  Tr,
-  Td,
-  Th,
-  FlexProps,
-  TableProps,
-  TableHeadProps,
-  TableRowProps,
   TableBodyProps,
+  TableCellProps,
   TableColumnHeaderProps,
   TableFooterProps,
+  TableHeadProps,
+  TableProps,
+  TableRowProps,
+  Tbody,
+  Td,
   Tfoot,
-  TableCellProps
+  Th,
+  Thead,
+  Tr
 } from '@chakra-ui/react';
 
 const capitalize = (str: string) => str.slice(0, 1).toUpperCase() + str.slice(1).toLowerCase();
@@ -24,7 +24,14 @@ const capitalize = (str: string) => str.slice(0, 1).toUpperCase() + str.slice(1)
 type MapperFunc<K extends Record<string | number, unknown>[]> = (
   data: K[number],
   index: number
-) => string | number | null | React.ReactElement;
+) => string | number | null | false | React.ReactElement;
+
+type Value<K extends Record<string | number, unknown>[]> = true | MapperFunc<K>;
+type MapperValue<K extends Record<string | number, unknown>[]> =
+  | Value<K>
+  | [Value<K>, TableCellProps | number]
+  // TODO: Add number here
+  | [Value<K>, (row: K[number], index: number) => TableCellProps];
 
 export interface DataTableTypes<
   T extends ReadonlyArray<string>,
@@ -34,7 +41,7 @@ export interface DataTableTypes<
   rawTitle?: JSX.Element | string | null;
   keys: T;
   data: K;
-  mapper: Record<T[number], true | MapperFunc<K>>;
+  mapper: Record<T[number], MapperValue<K>>;
   keyFunc?: string | ((row: K[number]) => string);
   showEmpty?: boolean;
   right?: JSX.Element;
@@ -70,7 +77,7 @@ const TitleRow: React.FC<Pick<DataTableTypes<any, any>, 'title' | 'rawTitle' | '
 
   return (
     <Flex w="full" justify="space-between">
-      {title ? <Heading mb="2">{title}</Heading> : <div></div>}
+      {title ? <Heading mb="2">{title}</Heading> : <div />}
       {right}
     </Flex>
   );
@@ -94,17 +101,27 @@ export function DataTable<
   } = props;
 
   const getData = (row: Record<string | number, any>, key: T[number], index: number) => {
-    const map = mapper[key] as true | MapperFunc<Array<typeof row>>;
+    const map = mapper[key] as MapperValue<Array<typeof row>>;
     if (map === true) {
-      return row[key] || null;
+      return [row[key] || null, {}];
+    }
+
+    if (Array.isArray(map)) {
+      const [m, options] = map;
+      // TODO: catch numbers here for width
+      if (m === true) {
+        return [row[key] || null, typeof options === 'function' ? options(row, index) : options];
+      }
+
+      return [m(row, index), typeof options === 'function' ? options(row, index) : options];
     }
 
     if (typeof map !== 'function') {
       console.error(`Mapper[${key}] is not a function`);
-      return null;
+      return [null, {}];
     }
 
-    return map(row, index) || null;
+    return [map(row, index) || null, {}];
   };
 
   return (
@@ -133,12 +150,14 @@ export function DataTable<
 
               return (
                 <Tr key={rowKey} {...tableProps?.tr}>
-                  {keys.map((key) => (
-                    <Td key={`${rowKey}-${key}`} {...tableProps?.td}>
-                      {//@ts-ignore
-                      getData(row, key, index)}
-                    </Td>
-                  ))}
+                  {keys.map((key) => {
+                    const [d, p] = getData(row, key, index);
+                    return (
+                      <Td key={`${rowKey}-${key}`} {...tableProps?.td} {...p}>
+                        {/*@ts-ignore*/ d}
+                      </Td>
+                    );
+                  })}
                 </Tr>
               );
             })}
