@@ -16,7 +16,8 @@ import {
   Tfoot,
   Th,
   Thead,
-  Tr
+  Tr,
+  useColorModeValue
 } from '@chakra-ui/react';
 
 const capitalize = (str: string) => str.slice(0, 1).toUpperCase() + str.slice(1).toLowerCase();
@@ -45,9 +46,22 @@ export interface DataTableTypes<
   keyFunc?: string | ((row: K[number]) => string);
   showEmpty?: boolean;
   right?: JSX.Element;
+
   showFooter?: boolean;
   showHeader?: boolean;
   emptyText?: string;
+
+  variant?: TableProps['variant'];
+  striped?: boolean;
+  /**
+   * Default is upper
+   */
+  headerStyle?: 'upper' | 'capitalize' | 'none';
+
+  overflow?: boolean;
+  widths?: Partial<Record<T[number], TableCellProps['w']>>;
+  rowProps?: (data: K[number], key: string) => TableRowProps | undefined;
+
   outerProps?: FlexProps;
   tableProps?: Partial<{
     table: TableProps;
@@ -56,6 +70,7 @@ export interface DataTableTypes<
     tfoot: TableFooterProps;
     tr: TableRowProps;
     trHead: TableRowProps;
+    trFoot: TableRowProps;
     th: TableColumnHeaderProps;
     td: TableCellProps;
   }>;
@@ -83,12 +98,35 @@ const TitleRow: React.FC<Pick<DataTableTypes<any, any>, 'title' | 'rawTitle' | '
   );
 };
 
+function FooterHeader<
+  T extends ReadonlyArray<string>,
+  K extends Record<string | number, unknown>[]
+>(props: Pick<DataTableTypes<T, K>, 'headerStyle' | 'tableProps' | 'keys'> & { head: boolean }) {
+  const { headerStyle, keys, tableProps, head } = props;
+  return (
+    <Tr
+      textTransform={
+        headerStyle === 'none' ? 'initial' : headerStyle === 'upper' ? 'uppercase' : undefined
+      }
+      {...(head ? tableProps?.trHead : tableProps?.trFoot)}
+    >
+      {keys.map((key) => (
+        <Th key={key} {...tableProps?.th}>
+          {headerStyle === 'capitalize' ? capitalize(key) : key}
+        </Th>
+      ))}
+    </Tr>
+  );
+}
+
 export function DataTable<
   T extends ReadonlyArray<string>,
   K extends Record<string | number, unknown>[]
 >(props: DataTableTypes<T, K>) {
   const {
     keys,
+    overflow,
+    headerStyle = 'upper',
     data,
     mapper,
     keyFunc,
@@ -97,13 +135,26 @@ export function DataTable<
     tableProps,
     showFooter,
     showHeader = true,
-    emptyText
+    emptyText,
+    striped,
+    widths,
+    variant,
+    rawTitle,
+    right,
+    rowProps,
+    title
   } = props;
+
+  const strippedBgColor = useColorModeValue('gray.50', 'gray.900');
 
   const getData = (row: Record<string | number, any>, key: T[number], index: number) => {
     const map = mapper[key] as MapperValue<Array<typeof row>>;
     if (map === true) {
-      return [row[key] || null, {}];
+      let out = (row[key] || null) as any;
+      if (out instanceof Date) {
+        out = out.toDateString();
+      }
+      return [out, {}];
     }
 
     if (Array.isArray(map)) {
@@ -125,19 +176,29 @@ export function DataTable<
   };
 
   return (
-    <Flex flexDir="column" w="full" p="2" {...outerProps}>
-      <TitleRow title={props.title} rawTitle={props.rawTitle} right={props.right} />
+    <Flex
+      flexDir="column"
+      w={overflow ? '100vw' : 'full'}
+      minW="full"
+      maxW="100vw"
+      p="2"
+      {...outerProps}
+    >
+      <TitleRow title={title} rawTitle={rawTitle} right={right} />
       {data.length > 0 || (data.length === 0 && showEmpty) ? (
-        <Table {...tableProps?.table}>
+        <Table
+          overflowX={overflow ? 'scroll' : 'hidden'}
+          {...(striped ? { variant: 'simple' } : { variant })}
+          {...tableProps?.table}
+        >
           {showHeader && (
             <Thead {...tableProps?.thead}>
-              <Tr {...tableProps?.trHead}>
-                {keys.map((key) => (
-                  <Th key={key} {...tableProps?.th}>
-                    {capitalize(key)}
-                  </Th>
-                ))}
-              </Tr>
+              <FooterHeader
+                keys={keys}
+                tableProps={tableProps}
+                headerStyle={headerStyle}
+                head={true}
+              />
             </Thead>
           )}
           <Tbody {...tableProps?.tbody}>
@@ -149,12 +210,27 @@ export function DataTable<
               }
 
               return (
-                <Tr key={rowKey} {...tableProps?.tr}>
+                <Tr
+                  key={rowKey}
+                  backgroundColor={striped && index % 2 === 0 ? strippedBgColor : undefined}
+                  {...tableProps?.tr}
+                  {...rowProps?.(row, rowKey)}
+                >
                   {keys.map((key) => {
-                    const [d, p] = getData(row, key, index);
+                    let [out, p] = getData(row, key, index);
                     return (
-                      <Td key={`${rowKey}-${key}`} {...tableProps?.td} {...p}>
-                        {/*@ts-ignore*/ d}
+                      <Td
+                        key={`${rowKey}-${key}`}
+                        {...tableProps?.td}
+                        // @ts-ignore
+                        minW={widths?.[key]}
+                        // @ts-ignore
+                        w={widths?.[key]}
+                        // @ts-ignore
+                        maxW={widths?.[key]}
+                        {...p}
+                      >
+                        {/*@ts-ignore*/ out}
                       </Td>
                     );
                   })}
@@ -164,13 +240,12 @@ export function DataTable<
           </Tbody>
           {showFooter && (
             <Tfoot {...tableProps?.tfoot}>
-              <Tr {...tableProps?.trHead}>
-                {keys.map((key) => (
-                  <Th key={key} {...tableProps?.th}>
-                    {capitalize(key)}
-                  </Th>
-                ))}
-              </Tr>
+              <FooterHeader
+                keys={keys}
+                tableProps={tableProps}
+                headerStyle={headerStyle}
+                head={false}
+              />
             </Tfoot>
           )}
         </Table>
