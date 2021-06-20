@@ -2,7 +2,7 @@
   "name": "chakra-data-table",
   "description": "Simple table with great TS",
   "author": "Fran Zekan",
-  "version": "1.0.6",
+  "version": "1.1.0",
   "license": "MIT",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
