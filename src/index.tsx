@@ -176,14 +176,7 @@ export function DataTable<
   };
 
   return (
-    <Flex
-      flexDir="column"
-      w={overflow ? '100vw' : 'full'}
-      minW="full"
-      maxW="100vw"
-      p="2"
-      {...outerProps}
-    >
+    <Flex flexDir="column" w={overflow ? '100vw' : 'full'} minW="full" maxW="100vw" {...outerProps}>
       <TitleRow title={title} rawTitle={rawTitle} right={right} />
       {data.length > 0 || (data.length === 0 && showEmpty) ? (
         <Table
