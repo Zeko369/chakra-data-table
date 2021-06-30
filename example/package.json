@@ -4,7 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "dev": "next"
+    "dev": "next -p 8743"
   },
   "alias": {
     "react": "../node_modules/react",

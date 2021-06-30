@@ -1,8 +1,10 @@
 import React from 'react';
 import {
+  Box,
   Flex,
   FlexProps,
   Heading,
+  Spinner,
   Table,
   TableBodyProps,
   TableCellProps,
@@ -61,6 +63,7 @@ export interface DataTableTypes<
   overflow?: boolean;
   widths?: Partial<Record<T[number], TableCellProps['w']>>;
   rowProps?: (data: K[number], key: string) => TableRowProps | undefined;
+  isLoading?: boolean;
 
   outerProps?: FlexProps;
   tableProps?: Partial<{
@@ -142,10 +145,12 @@ export function DataTable<
     rawTitle,
     right,
     rowProps,
-    title
+    title,
+    isLoading
   } = props;
 
   const strippedBgColor = useColorModeValue('gray.50', 'gray.900');
+  const isLoadingBg = useColorModeValue('white', 'gray.800');
 
   const getData = (row: Record<string | number, any>, key: T[number], index: number) => {
     const map = mapper[key] as MapperValue<Array<typeof row>>;
@@ -178,73 +183,106 @@ export function DataTable<
   return (
     <Flex flexDir="column" w={overflow ? '100vw' : 'full'} minW="full" maxW="100vw" {...outerProps}>
       <TitleRow title={title} rawTitle={rawTitle} right={right} />
-      {data.length > 0 || (data.length === 0 && showEmpty) ? (
-        <Table
-          overflowX={overflow ? 'scroll' : 'hidden'}
-          {...(striped ? { variant: 'simple' } : { variant })}
-          {...tableProps?.table}
-        >
-          {showHeader && (
-            <Thead {...tableProps?.thead}>
-              <FooterHeader
-                keys={keys}
-                tableProps={tableProps}
-                headerStyle={headerStyle}
-                head={true}
-              />
-            </Thead>
-          )}
-          <Tbody {...tableProps?.tbody}>
-            {data.map((row, index) => {
-              let rowKey: string = index.toString();
-              if (keyFunc) {
-                // @ts-ignore
-                rowKey = typeof keyFunc === 'string' ? row[keyFunc] : keyFunc(row, index);
-              }
+      <Box pos="relative" w="full" h="full">
+        {isLoading && (
+          <>
+            <Flex
+              w="full"
+              h="full"
+              pos="absolute"
+              top="0"
+              left="0"
+              right="0"
+              bottom="0"
+              zIndex="12"
+              align="center"
+              justify="center"
+            >
+              <Spinner size="xl" />
+            </Flex>
+            <Box
+              w="full"
+              h="full"
+              opacity="0.7"
+              bg={isLoadingBg}
+              pos="absolute"
+              top="0"
+              left="0"
+              right="0"
+              bottom="0"
+              zIndex="10"
+            />
+          </>
+        )}
 
-              return (
-                <Tr
-                  key={rowKey}
-                  backgroundColor={striped && index % 2 === 0 ? strippedBgColor : undefined}
-                  {...tableProps?.tr}
-                  {...rowProps?.(row, rowKey)}
-                >
-                  {keys.map((key) => {
-                    let [out, p] = getData(row, key, index);
-                    return (
-                      <Td
-                        key={`${rowKey}-${key}`}
-                        {...tableProps?.td}
-                        // @ts-ignore
-                        minW={widths?.[key]}
-                        // @ts-ignore
-                        w={widths?.[key]}
-                        // @ts-ignore
-                        maxW={widths?.[key]}
-                        {...p}
-                      >
-                        {/*@ts-ignore*/ out}
-                      </Td>
-                    );
-                  })}
-                </Tr>
-              );
-            })}
-          </Tbody>
-          {showFooter && (
-            <Tfoot {...tableProps?.tfoot}>
-              <FooterHeader
-                keys={keys}
-                tableProps={tableProps}
-                headerStyle={headerStyle}
-                head={false}
-              />
-            </Tfoot>
-          )}
-        </Table>
-      ) : (
-        <Heading size="sm">{emptyText || 'Empty'}</Heading>
-      )}
+        {data.length > 0 || (data.length === 0 && showEmpty) ? (
+          <Table
+            overflowX={overflow ? 'scroll' : 'hidden'}
+            {...(striped ? { variant: 'simple' } : { variant })}
+            {...tableProps?.table}
+          >
+            {showHeader && (
+              <Thead {...tableProps?.thead}>
+                <FooterHeader
+                  keys={keys}
+                  tableProps={tableProps}
+                  headerStyle={headerStyle}
+                  head={true}
+                />
+              </Thead>
+            )}
+            <Tbody {...tableProps?.tbody}>
+              {data.map((row, index) => {
+                let rowKey: string = index.toString();
+                if (keyFunc) {
+                  // @ts-ignore
+                  rowKey = typeof keyFunc === 'string' ? row[keyFunc] : keyFunc(row, index);
+                }
+
+                return (
+                  <Tr
+                    key={rowKey}
+                    backgroundColor={striped && index % 2 === 0 ? strippedBgColor : undefined}
+                    {...tableProps?.tr}
+                    {...rowProps?.(row, rowKey)}
+                  >
+                    {keys.map((key) => {
+                      let [out, p] = getData(row, key, index);
+                      return (
+                        <Td
+                          key={`${rowKey}-${key}`}
+                          {...tableProps?.td}
+                          // @ts-ignore
+                          minW={widths?.[key]}
+                          // @ts-ignore
+                          w={widths?.[key]}
+                          // @ts-ignore
+                          maxW={widths?.[key]}
+                          {...p}
+                        >
+                          {/*@ts-ignore*/ out}
+                        </Td>
+                      );
+                    })}
+                  </Tr>
+                );
+              })}
+            </Tbody>
+            {showFooter && (
+              <Tfoot {...tableProps?.tfoot}>
+                <FooterHeader
+                  keys={keys}
+                  tableProps={tableProps}
+                  headerStyle={headerStyle}
+                  head={false}
+                />
+              </Tfoot>
+            )}
+          </Table>
+        ) : (
+          <Heading size="sm">{emptyText || 'Empty'}</Heading>
+        )}
+      </Box>
     </Flex>
   );
 }
