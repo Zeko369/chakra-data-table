@@ -7,21 +7,26 @@ import { LinkButton } from 'chakra-next-link';
 import { DataTable } from '../../dist';
 import { useEffect } from 'react';
 
+const initData = [
+  { id: 1, title: 'foobar', items: ['1', '2', '3'] },
+  { id: 2, title: 'something', items: [] },
+  { id: 3, title: 'fooasdasd', items: ['1', '2', '3'] },
+  { id: 4, title: null, items: ['1'] }
+];
+
 const Home: NextPage = () => {
   const [loading, setLoading] = useState(false);
-  const [data, setData] = useState([
-    { id: 1, title: 'foobar', items: ['1', '2', '3'] },
-    { id: 2, title: 'something', items: [] },
-    { id: 3, title: 'fooasdasd', items: ['1', '2', '3'] },
-    { id: 4, title: null, items: ['1'] }
-  ]);
+  const [data, setData] = useState(initData);
 
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      setLoading(false);
-    }, 2000);
+    if (loading) {
+      const timeout = setTimeout(() => {
+        setData(initData);
+        setLoading(false);
+      }, 2000);
 
-    return () => clearTimeout(timeout);
+      return () => clearTimeout(timeout);
+    }
   }, [loading]);
 
   const { colorMode, toggleColorMode } = useColorMode();
@@ -46,6 +51,7 @@ const Home: NextPage = () => {
       </HStack>
 
       <DataTable
+        striped
         title="Some random data"
         data={data}
         isLoading={loading}
@@ -63,7 +69,10 @@ const Home: NextPage = () => {
         mapper={{
           id: [true, 8],
           index: (r, index) => <Text color="red.600">{index}</Text>,
-          title: [(r) => <Text color="green">{r.title}</Text>, { bg: 'gray.100' }],
+          title: [
+            (r) => <Text color="green">{r.title}</Text>,
+            { borderRight: '1px solid red', borderLeft: '1px solid red' }
+          ],
           items: [
             (r) => (r.items.length === 0 ? 'Error' : r.items.join(', ')),
             (r) => ({

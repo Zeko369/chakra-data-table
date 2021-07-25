@@ -51,7 +51,7 @@ export interface DataTableTypes<
 
   showFooter?: boolean;
   showHeader?: boolean;
-  emptyText?: string;
+  emptyText?: string | JSX.Element | null;
 
   variant?: TableProps['variant'];
   striped?: boolean;
