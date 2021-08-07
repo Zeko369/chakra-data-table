@@ -155,7 +155,8 @@ export function DataTable<
     right,
     rowProps,
     title,
-    isLoading
+    isLoading,
+    labels
   } = props;
 
   const strippedBgColor = useColorModeValue('gray.50', 'gray.900');
@@ -237,6 +238,7 @@ export function DataTable<
                   tableProps={tableProps}
                   headerStyle={headerStyle}
                   head={true}
+                  labels={labels}
                 />
               </Thead>
             )}
@@ -284,6 +286,7 @@ export function DataTable<
                   tableProps={tableProps}
                   headerStyle={headerStyle}
                   head={false}
+                  labels={labels}
                 />
               </Tfoot>
             )}
