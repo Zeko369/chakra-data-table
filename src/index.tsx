@@ -43,6 +43,7 @@ export interface DataTableTypes<
   title?: string;
   rawTitle?: JSX.Element | string | null;
   keys: T;
+  labels?: Record<T[number], string>;
   data: K;
   mapper: Record<T[number], MapperValue<K>>;
   keyFunc?: string | ((row: K[number]) => string);
@@ -104,8 +105,13 @@ const TitleRow: React.FC<Pick<DataTableTypes<any, any>, 'title' | 'rawTitle' | '
 function FooterHeader<
   T extends ReadonlyArray<string>,
   K extends Record<string | number, unknown>[]
->(props: Pick<DataTableTypes<T, K>, 'headerStyle' | 'tableProps' | 'keys'> & { head: boolean }) {
-  const { headerStyle, keys, tableProps, head } = props;
+>(
+  props: Pick<DataTableTypes<T, K>, 'headerStyle' | 'tableProps' | 'keys' | 'labels'> & {
+    head: boolean;
+  }
+) {
+  const { headerStyle, keys, tableProps, head, labels } = props;
+
   return (
     <Tr
       textTransform={
@@ -113,11 +119,14 @@ function FooterHeader<
       }
       {...(head ? tableProps?.trHead : tableProps?.trFoot)}
     >
-      {keys.map((key) => (
-        <Th key={key} {...tableProps?.th}>
-          {headerStyle === 'capitalize' ? capitalize(key) : key}
-        </Th>
-      ))}
+      {keys.map((key) => {
+        const text = (labels as any)?.[key] || key;
+        return (
+          <Th key={key} {...tableProps?.th}>
+            {headerStyle === 'capitalize' ? capitalize(text) : text}
+          </Th>
+        );
+      })}
     </Tr>
   );
 }
