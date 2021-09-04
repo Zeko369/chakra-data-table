@@ -43,7 +43,7 @@ export interface DataTableTypes<
   title?: string;
   rawTitle?: JSX.Element | string | null;
   keys: T;
-  labels?: Record<T[number], string>;
+  labels?: Partial<Record<T[number], string>>;
   data: K;
   mapper: Record<T[number], MapperValue<K>>;
   keyFunc?: string | ((row: K[number]) => string);
