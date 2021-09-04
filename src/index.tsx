@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Box,
   Flex,
@@ -19,7 +19,8 @@ import {
   Th,
   Thead,
   Tr,
-  useColorModeValue
+  useColorMode,
+  useToken
 } from '@chakra-ui/react';
 
 const capitalize = (str: string) => str.slice(0, 1).toUpperCase() + str.slice(1).toLowerCase();
@@ -131,6 +132,49 @@ function FooterHeader<
   );
 }
 
+const useColorModeBody = () => {
+  const colorMode = useColorMode();
+  const [theme, setTheme] = useState<'light' | 'dark'>(colorMode.colorMode || 'light');
+  const observer = useRef<MutationObserver>();
+
+  useEffect(() => {
+    const body = document.querySelector('body');
+    if (!body) {
+      return;
+    }
+
+    const setup = () => {
+      if (body.classList.contains('chakra-ui-dark')) {
+        setTheme('dark');
+      } else {
+        setTheme('light');
+      }
+    };
+
+    observer.current = new MutationObserver((mutationList) => {
+      const elem = mutationList.filter((mr) => mr.attributeName === 'class')[0]?.target as
+        | HTMLElement
+        | undefined;
+      if (elem) {
+        setup();
+      }
+    });
+
+    observer.current.observe(body, { attributes: true });
+
+    return () => observer.current?.disconnect();
+  }, []);
+
+  return theme;
+};
+
+const useGetColor = (a: 'light' | 'dark', light: string, dark: string) => {
+  const tokens = useToken('colors', [light, dark]);
+  const index = a === 'light' ? 0 : 1;
+
+  return tokens[index];
+};
+
 export function DataTable<
   T extends ReadonlyArray<string>,
   K extends Record<string | number, unknown>[]
@@ -159,8 +203,9 @@ export function DataTable<
     labels
   } = props;
 
-  const strippedBgColor = useColorModeValue('gray.50', 'gray.900');
-  const isLoadingBg = useColorModeValue('white', 'gray.800');
+  const theme = useColorModeBody();
+  const strippedBgColor = useGetColor(theme, 'gray.50', 'gray.900');
+  const isLoadingBg = useGetColor(theme, 'white', 'gray.800');
 
   const getData = (row: Record<string | number, any>, key: T[number], index: number) => {
     const map = mapper[key] as MapperValue<Array<typeof row>>;
