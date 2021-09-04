@@ -161,6 +161,7 @@ const useColorModeBody = () => {
     });
 
     observer.current.observe(body, { attributes: true });
+    setup();
 
     return () => observer.current?.disconnect();
   }, []);
