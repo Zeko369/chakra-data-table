@@ -42,14 +42,14 @@ export interface DataTableTypes<
   K extends Record<string | number, unknown>[]
 > {
   title?: string;
-  rawTitle?: JSX.Element | string | null;
+  rawTitle?: JSX.Element | string | null | false;
   keys: T;
   labels?: Partial<Record<T[number], string>>;
   data: K;
   mapper: Record<T[number], MapperValue<K>>;
   keyFunc?: string | ((row: K[number]) => string);
   showEmpty?: boolean;
-  right?: JSX.Element;
+  right?: JSX.Element | false;
 
   showFooter?: boolean;
   showHeader?: boolean;
