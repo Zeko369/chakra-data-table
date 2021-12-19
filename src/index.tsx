@@ -53,6 +53,7 @@ export interface DataTableTypes<
 
   showFooter?: boolean;
   showHeader?: boolean;
+  headerRowProps?: FlexProps;
   emptyText?: string | JSX.Element | null;
 
   variant?: TableProps['variant'];
@@ -81,11 +82,9 @@ export interface DataTableTypes<
   }>;
 }
 
-const TitleRow: React.FC<Pick<DataTableTypes<any, any>, 'title' | 'rawTitle' | 'right'>> = ({
-  title,
-  rawTitle,
-  right
-}) => {
+const TitleRow: React.FC<
+  Pick<DataTableTypes<any, any>, 'title' | 'rawTitle' | 'right' | 'headerRowProps'>
+> = ({ title, rawTitle, right, headerRowProps }) => {
   if (rawTitle) {
     return (
       <Flex w="full" justify="space-between">
@@ -96,7 +95,7 @@ const TitleRow: React.FC<Pick<DataTableTypes<any, any>, 'title' | 'rawTitle' | '
   }
 
   return (
-    <Flex w="full" justify="space-between">
+    <Flex w="full" alignItems="center" justify="space-between" {...headerRowProps}>
       {title ? <Heading mb="2">{title}</Heading> : <div />}
       {right}
     </Flex>
