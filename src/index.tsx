@@ -82,9 +82,10 @@ export interface DataTableTypes<
   }>;
 }
 
-const TitleRow: React.FC<
-  Pick<DataTableTypes<any, any>, 'title' | 'rawTitle' | 'right' | 'headerRowProps'>
-> = ({ title, rawTitle, right, headerRowProps }) => {
+const TitleRow: React.FC<Pick<
+  DataTableTypes<any, any>,
+  'title' | 'rawTitle' | 'right' | 'headerRowProps'
+>> = ({ title, rawTitle, right, headerRowProps }) => {
   if (rawTitle) {
     return (
       <Flex w="full" justify="space-between">
