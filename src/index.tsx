@@ -129,11 +129,14 @@ function FooterHeader<
       {...(head ? tableProps?.trHead : tableProps?.trFoot)}
     >
       {keys.map((key) => {
-        const text = (labels as any)?.[key] || key;
-
+        const label = (labels as any)?.[key];
         return (
           <Th key={key} {...tableProps?.th} {...((headerMapperProps as any)?.[key as any] as any)}>
-            {headerStyle === 'capitalize' ? capitalize(text) : text}
+            {!label || typeof label === 'string'
+              ? headerStyle === 'capitalize'
+                ? capitalize(label || key)
+                : label || key
+              : label}
           </Th>
         );
       })}

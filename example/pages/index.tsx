@@ -56,6 +56,7 @@ const Home: NextPage = () => {
         data={data}
         isLoading={loading}
         keys={['id', 'index', 'title', 'items', 'buttons'] as const}
+        labels={{ buttons: <Button size="sm">Buttons</Button> }}
         keyFunc={'id'}
         tableProps={{
           td: {
