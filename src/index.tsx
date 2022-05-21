@@ -25,6 +25,8 @@ import {
 
 const capitalize = (str: string) => str.slice(0, 1).toUpperCase() + str.slice(1).toLowerCase();
 
+type ValidReactChild = React.ReactElement | string | number | null | false;
+
 type MapperFunc<
   K extends Record<string | number, unknown>[],
   Z = string | number | null | false | undefined | React.ReactElement
@@ -42,16 +44,17 @@ export interface DataTableTypes<
   K extends Record<string | number, unknown>[]
 > {
   title?: string;
-  rawTitle?: JSX.Element | string | null | false;
+  rawTitle?: ValidReactChild;
+  labels?: Partial<Record<T[number], ValidReactChild>>;
+
   keys: T;
-  labels?: Partial<Record<T[number], string>>;
   data: K;
   mapper: Record<T[number], MapperValue<K>>;
+
   headerMapperProps?: Partial<Record<T[number], TableCellProps>>;
   keyFunc?: string | ((row: K[number]) => string);
   showEmpty?: boolean;
   right?: JSX.Element | false;
-
   showFooter?: boolean;
   showHeader?: boolean;
   headerRowProps?: FlexProps;
@@ -59,6 +62,7 @@ export interface DataTableTypes<
 
   variant?: TableProps['variant'];
   striped?: boolean;
+
   /**
    * Default is upper
    */
