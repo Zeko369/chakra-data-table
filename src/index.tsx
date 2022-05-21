@@ -25,10 +25,10 @@ import {
 
 const capitalize = (str: string) => str.slice(0, 1).toUpperCase() + str.slice(1).toLowerCase();
 
-type MapperFunc<K extends Record<string | number, unknown>[]> = (
-  data: K[number],
-  index: number
-) => string | number | null | false | undefined | React.ReactElement;
+type MapperFunc<
+  K extends Record<string | number, unknown>[],
+  Z = string | number | null | false | undefined | React.ReactElement
+> = (data: K[number], index: number) => Z;
 
 type Value<K extends Record<string | number, unknown>[]> = true | MapperFunc<K>;
 type MapperValue<K extends Record<string | number, unknown>[]> =
@@ -47,6 +47,7 @@ export interface DataTableTypes<
   labels?: Partial<Record<T[number], string>>;
   data: K;
   mapper: Record<T[number], MapperValue<K>>;
+  headerMapperProps?: Partial<Record<T[number], TableCellProps>>;
   keyFunc?: string | ((row: K[number]) => string);
   showEmpty?: boolean;
   right?: JSX.Element | false;
@@ -107,11 +108,14 @@ function FooterHeader<
   T extends ReadonlyArray<string>,
   K extends Record<string | number, unknown>[]
 >(
-  props: Pick<DataTableTypes<T, K>, 'headerStyle' | 'tableProps' | 'keys' | 'labels'> & {
+  props: Pick<
+    DataTableTypes<T, K>,
+    'headerStyle' | 'tableProps' | 'keys' | 'labels' | 'headerMapperProps'
+  > & {
     head: boolean;
   }
 ) {
-  const { headerStyle, keys, tableProps, head, labels } = props;
+  const { headerStyle, keys, tableProps, head, labels, headerMapperProps } = props;
 
   return (
     <Tr
@@ -122,8 +126,9 @@ function FooterHeader<
     >
       {keys.map((key) => {
         const text = (labels as any)?.[key] || key;
+
         return (
-          <Th key={key} {...tableProps?.th}>
+          <Th key={key} {...tableProps?.th} {...((headerMapperProps as any)?.[key as any] as any)}>
             {headerStyle === 'capitalize' ? capitalize(text) : text}
           </Th>
         );
@@ -201,7 +206,8 @@ export function DataTable<
     rowProps,
     title,
     isLoading,
-    labels
+    labels,
+    headerMapperProps
   } = props;
 
   const theme = useColorModeBody();
@@ -283,6 +289,7 @@ export function DataTable<
                   keys={keys}
                   tableProps={tableProps}
                   headerStyle={headerStyle}
+                  headerMapperProps={headerMapperProps}
                   head={true}
                   labels={labels}
                 />

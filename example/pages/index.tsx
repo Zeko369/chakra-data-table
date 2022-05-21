@@ -65,6 +65,9 @@ const Home: NextPage = () => {
             fontStyle: 'italic'
           }
         }}
+        headerMapperProps={{
+          id: { color: 'red.400' }
+        }}
         showFooter
         mapper={{
           id: [true, 8],
