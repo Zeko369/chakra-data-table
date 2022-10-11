@@ -25,15 +25,15 @@ import {
 
 const capitalize = (str: string) => str.slice(0, 1).toUpperCase() + str.slice(1).toLowerCase();
 
-type ValidReactChild = React.ReactElement | string | number | null | false;
+export type ValidReactChild = React.ReactElement | string | number | null | false;
 
-type MapperFunc<
+export type MapperFunc<
   K extends Record<string | number, unknown>[],
   Z = string | number | null | false | undefined | React.ReactElement
 > = (data: K[number], index: number) => Z;
 
-type Value<K extends Record<string | number, unknown>[]> = true | MapperFunc<K>;
-type MapperValue<K extends Record<string | number, unknown>[]> =
+export type Value<K extends Record<string | number, unknown>[]> = true | MapperFunc<K>;
+export type MapperValue<K extends Record<string | number, unknown>[]> =
   | Value<K>
   | [Value<K>, TableCellProps | number]
   // TODO: Add number here
