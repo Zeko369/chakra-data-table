@@ -286,6 +286,7 @@ export function DataTable<
 
         {data.length > 0 || (data.length === 0 && showEmpty) ? (
           <Table
+            className="chakra-data-table"
             overflowX={overflow ? 'scroll' : 'hidden'}
             {...(striped ? { variant: 'simple' } : { variant })}
             {...tableProps?.table}
